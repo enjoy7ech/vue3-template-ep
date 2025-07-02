@@ -1,0 +1,6 @@
+{
+  "$schema": "./.vscode/draft-07.schema.json",
+  "printWidth": 100,
+  "semi": false,
+  "singleQuote": true
+}
