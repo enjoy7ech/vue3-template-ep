@@ -1,2 +1,8 @@
-<template>page B</template>
-<script setup></script>
+<template>page BBB</template>
+<script setup>
+defineOptions({
+  meta: {
+    name: '页面B',
+  },
+})
+</script>

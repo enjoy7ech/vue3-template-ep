@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import meta from './meta'
+import meta from './meta.json'
 
 const views = import.meta.glob('../views/**/*.vue')
 

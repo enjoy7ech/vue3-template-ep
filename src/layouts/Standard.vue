@@ -100,14 +100,14 @@ router.beforeEach((to, from, next) => {
 
 const setTab = (path) => {
   if (tabs.value.find((tab) => tab.path === path)) return
-  if (getMeta(path)) {
-    tabs.value.push({
-      path: path,
-      meta: getMeta(path),
-    })
-    refreshDragTabs()
-    localStorage.setItem('seqTabs', JSON.stringify(tabs.value.map((o) => o.path)))
-  }
+  tabs.value.push({
+    path: path,
+    meta: getMeta(path) || {
+      name: path,
+    },
+  })
+  refreshDragTabs()
+  localStorage.setItem('seqTabs', JSON.stringify(tabs.value.map((o) => o.path)))
 }
 
 const closeTab = (tab) => {
@@ -250,7 +250,7 @@ onMounted(() => {
     .standard-router-view-header {
       padding: 0.6rem 0.8rem;
       position: relative;
-      height: 3.2rem;
+      height: 42px;
     }
     .standard-router-view-body {
       flex: 1;
@@ -271,6 +271,7 @@ onMounted(() => {
 
 .effect-tab {
   font-size: 15px;
+  line-height: 15px;
   position: absolute;
   width: v-bind(tabWidth + 'px');
   display: flex;
@@ -307,7 +308,7 @@ onMounted(() => {
   &.active-tab {
     background-color: #fff;
     border-radius: 0.6rem 0.6rem 0 0;
-    --dec-size: 1rem;
+    --dec-size: 15px;
     box-shadow: 0 0.5rem 0 0 #fff;
     .effect-tab-content:hover {
       background-color: #fff;

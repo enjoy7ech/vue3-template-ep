@@ -8,6 +8,12 @@
 <script setup>
 import * as echarts from 'echarts'
 
+defineOptions({
+  meta: {
+    name: '可视化诊断分析',
+  },
+})
+
 let chartInstance = null
 const chart = ref()
 

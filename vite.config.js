@@ -10,6 +10,7 @@ import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
 import postCssNested from 'postcss-nested'
 import autoprefixer from 'autoprefixer'
+import generateMeta from './.vite/plugins/generate-meta'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -42,6 +43,7 @@ export default defineConfig({
       ],
     }),
     Icons(),
+    generateMeta(),
   ],
   css: {
     postcss: {

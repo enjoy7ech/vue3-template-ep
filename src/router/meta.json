@@ -1,0 +1,11 @@
+{
+  "/DataAnalyze/Visualization": {
+    "name": "可视化诊断分析"
+  },
+  "/a": {
+    "name": "页面A"
+  },
+  "/b": {
+    "name": "页面B"
+  }
+}
