@@ -8,6 +8,8 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
+import postCssNested from 'postcss-nested'
+import autoprefixer from 'autoprefixer'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -41,6 +43,12 @@ export default defineConfig({
     }),
     Icons(),
   ],
+  css: {
+    postcss: {
+      map: true,
+      plugins: [postCssNested, autoprefixer],
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -53,7 +53,6 @@
               {{ tab.meta?.name }}
               <EpClose
                 class="ml-a effect-tab-close"
-                style="cursor: pointer"
                 @mousedown.stop
                 @click.stop="closeTab(tab)"
               ></EpClose>
