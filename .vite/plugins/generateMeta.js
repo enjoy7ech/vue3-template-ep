@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 
 // vite插件，用于生成 router/meta.json
+const META_REG = /defineOptions\([\s\S]+?meta[\s\S]+?(\{[\s\S]+?\})/
+
 export default function generateMeta() {
   return {
     name: 'vite-plugin-generate-meta',
@@ -22,15 +24,15 @@ export default function generateMeta() {
       if (viewsPath) {
         viewsPath = `/${viewsPath}`
         const vueStr = fs.readFileSync(file, 'utf-8')
-        const metaRegex = /defineOptions\([\s\S]+meta[\s\S]+?(\{[\s\S]+?\})/
-        const meta = vueStr.match(metaRegex)?.[1]
+        const meta = vueStr.match(META_REG)?.[1]
         if (meta) {
           try {
             const metaRaw = JSON.parse(fs.readFileSync('src/router/meta.json', 'utf-8'))
             metaRaw[viewsPath] = new Function(`return ${meta}`)()
             fs.writeFileSync('src/router/meta.json', JSON.stringify(metaRaw, null, 2))
           } catch (error) {
-            this.error(`解析 ${viewsPath} meta 失败`, error)
+            console.error(error)
+            this.warn(`解析 ${viewsPath} meta 失败： ${error}`)
           }
         }
       }
@@ -51,12 +53,12 @@ export default function generateMeta() {
             if (viewsPath) {
               viewsPath = `/${viewsPath}`
               const vueStr = fs.readFileSync(filePath, 'utf-8')
-              const metaRegex = /defineOptions\([\s\S]+meta[\s\S]+?(\{[\s\S]+?\})/
-              const meta = vueStr.match(metaRegex)?.[1]
+              const meta = vueStr.match(META_REG)?.[1]
               if (meta) {
                 try {
                   newMeta[viewsPath] = new Function(`return ${meta}`)()
                 } catch (error) {
+                  console.error(error)
                   this.error(`解析 ${viewsPath} meta 失败`, error)
                 }
               }
