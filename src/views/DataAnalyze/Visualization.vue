@@ -46,10 +46,10 @@ onMounted(() => {
 
 <style scoped>
 .visualization-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
 }
 </style>

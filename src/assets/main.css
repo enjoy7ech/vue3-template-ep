@@ -1,4 +1,5 @@
 @import './base.css';
+@import './element-plus/dark.css';
 
 #app {
   display: flex;

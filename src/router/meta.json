@@ -1,4 +1,7 @@
 {
+  "/404": {
+    "name": "Oops..."
+  },
   "/DataAnalyze/Visualization": {
     "name": "可视化诊断分析"
   },

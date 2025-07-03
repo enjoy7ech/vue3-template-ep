@@ -19,7 +19,15 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
     AutoImport({
-      imports: ['vue'],
+      imports: [
+        'vue',
+        {
+          lodash: [
+            // 使用 '*' 导入全部（慎用，可能增加打包体积）
+            ['*', '_'], // 将所有函数挂载到 `_` 对象上
+          ],
+        },
+      ],
       resolvers: [
         ElementPlusResolver(),
         IconsResolver({

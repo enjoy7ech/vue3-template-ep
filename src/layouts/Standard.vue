@@ -1,14 +1,51 @@
 <template>
   <el-container class="theme-standard">
     <el-header class="d-flex a-center standard-header">
-      <span style="font-size: 2.6rem; font-weight: bold">信号分析工具</span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        style="font-size: 40px; cursor: pointer; margin-right: 20px"
+        width="1em"
+        height="1em"
+        viewBox="0 0 24 24"
+        @click="toggleSideBar"
+      >
+        <path
+          fill="currentColor"
+          d="M18 3a3 3 0 0 1 2.995 2.824L21 6v12a3 3 0 0 1-2.824 2.995L18 21H6a3 3 0 0 1-2.995-2.824L3 18V6a3 3 0 0 1 2.824-2.995L6 3zm0 2H9v14h9a1 1 0 0 0 .993-.883L19 18V6a1 1 0 0 0-.883-.993zm-2.293 4.293a1 1 0 0 1 .083 1.32l-.083.094L14.415 12l1.292 1.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083l-2-2a1 1 0 0 1-.083-1.32l.083-.094l2-2a1 1 0 0 1 1.414 0"
+        />
+      </svg>
+
+      <span style="font-size: 2.6em; font-weight: bold">VUE3-TEMPLATE-EP</span>
+
+      <div class="ml-a LD-switch" @click="onChangeDL">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+          <g fill="none">
+            <path
+              fill="currentColor"
+              d="M12 19a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1m6.364-2.05l.707.707a1 1 0 0 1-1.414 1.414l-.707-.707a1 1 0 0 1 1.414-1.414m-12.728 0a1 1 0 0 1 1.497 1.32l-.083.094l-.707.707a1 1 0 0 1-1.497-1.32l.083-.094zM12 6a6 6 0 1 1 0 12a6 6 0 0 1 0-12m-8 5a1 1 0 0 1 .117 1.993L4 13H3a1 1 0 0 1-.117-1.993L3 11zm17 0a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM4.929 4.929a1 1 0 0 1 1.32-.083l.094.083l.707.707a1 1 0 0 1-1.32 1.497l-.094-.083l-.707-.707a1 1 0 0 1 0-1.414m14.142 0a1 1 0 0 1 0 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0M12 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1"
+            />
+          </g>
+        </svg>
+      </div>
     </el-header>
+
     <el-container class="standard-container">
-      <el-aside class="standard-aside" width="200px">
-        <el-scrollbar>
-          <el-menu router :default-active="$route.path">
+      <el-aside class="standard-aside">
+        <el-scrollbar
+          :view-style="{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }"
+        >
+          <el-menu
+            router
+            :default-active="$route.path"
+            :collapse="isCollapse"
+            style="flex: 1; border-right: none"
+          >
             <template v-for="(item, index) in menus" :key="index">
-              <el-sub-menu :index="index" v-if="item?.children">
+              <el-sub-menu :index="'sub-menu' + index" v-if="item?.children">
                 <template #title>
                   <el-icon v-if="item.icon">
                     <component :is="item.icon"></component>
@@ -29,10 +66,10 @@
                 </el-menu-item>
               </el-sub-menu>
               <el-menu-item v-else :index="item.path">
+                <el-icon v-if="item.icon">
+                  <component :is="item.icon"></component>
+                </el-icon>
                 <template #title>
-                  <el-icon v-if="item.icon">
-                    <component :is="item.icon"></component>
-                  </el-icon>
                   <span>{{ item.title }}</span>
                 </template>
               </el-menu-item>
@@ -49,14 +86,56 @@
             v-for="(tab, index) in tabs"
             :key="index"
           >
-            <div :class="['effect-tab-content']">
-              {{ tab.meta?.name }}
-              <EpClose
-                class="ml-a effect-tab-close"
-                @mousedown.stop
-                @click.stop="closeTab(tab)"
-              ></EpClose>
-            </div>
+            <el-popover
+              trigger="hover"
+              :width="tabWidth"
+              :disabled="route.path == tab.path"
+              :persistent="false"
+              :show-after="1000"
+            >
+              <div
+                :style="{
+                  height: tabWidth * 0.6 + 'px',
+                  overflow: 'hidden',
+                }"
+              >
+                <el-scrollbar
+                  :view-style="{ height: '100%', display: 'flex', flexDirection: 'column' }"
+                >
+                  <div class="d-flex f-col f-1" :style="{ zoom: 0.3 }">
+                    <component :is="getRouteComp(tab, true)"></component>
+                  </div>
+                </el-scrollbar>
+              </div>
+              <template #reference>
+                <div :class="['effect-tab-content']">
+                  <svg
+                    class="effect-tab-content-before"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M 24 0 L 24 24 L 0 24 Q 24 24 24 0 Z" fill="currentColor" />
+                  </svg>
+                  <div class="effect-tab-content-wrapper">
+                    <div class="effect-tab-title">
+                      {{ tab.meta?.name }}
+                    </div>
+                    <EpClose
+                      class="ml-a effect-tab-close"
+                      @mousedown.stop
+                      @click.stop="closeTab(tab)"
+                    ></EpClose>
+                  </div>
+                  <svg
+                    class="effect-tab-content-after"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M 0 0 L 0 24 L 24 24 Q 0 24 0 0 Z" fill="currentColor" />
+                  </svg>
+                </div>
+              </template>
+            </el-popover>
           </div>
         </div>
         <div class="standard-router-view-body">
@@ -66,7 +145,9 @@
             :key="tab.path"
             :style="{ zIndex: route.path === tab.path ? 1 : -1 }"
           >
-            <el-scrollbar>
+            <el-scrollbar
+              :view-style="{ height: '100%', display: 'flex', flexDirection: 'column' }"
+            >
               <component :is="getRouteComp(tab)"></component>
             </el-scrollbar>
           </div>
@@ -80,22 +161,94 @@
 import { useRouter, useRoute } from 'vue-router'
 import { getMeta } from '@/router'
 import useDraggable from '@/composables/useDraggable'
+import { useDark, useToggle } from '@vueuse/core'
+import { gsap } from 'gsap'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
+gsap.registerPlugin(MorphSVGPlugin)
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+
+const changeDL = async () => {
+  await gsap
+    .timeline()
+    .to(
+      '.LD-switch',
+      {
+        background: isDark.value ? '#515151' : '#abcce1',
+        color: isDark.value ? '#cbd1d7' : '#f5cb32',
+      },
+      0,
+    )
+    .to(
+      '.LD-switch svg',
+      {
+        marginLeft: isDark.value ? 'auto' : '0',
+        background: isDark.value ? '#28293c' : '#fff',
+      },
+      0,
+    )
+    .to(
+      '.LD-switch svg path',
+      {
+        morphSVG: {
+          type: 'linear',
+          shape: isDark.value
+            ? 'M12 3.5a8.5 8.5 0 1 0 8.46 9.32a.5.5 0 0 0-.812-.435a5 5 0 1 1-6.137-7.893a.5.5 0 0 0-.225-.895A8.6 8.6 0 0 0 12 3.5'
+            : 'M12 19a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0v-1a1 1 0 0 1 1-1m6.364-2.05l.707.707a1 1 0 0 1-1.414 1.414l-.707-.707a1 1 0 0 1 1.414-1.414m-12.728 0a1 1 0 0 1 1.497 1.32l-.083.094l-.707.707a1 1 0 0 1-1.497-1.32l.083-.094zM12 6a6 6 0 1 1 0 12a6 6 0 0 1 0-12m-8 5a1 1 0 0 1 .117 1.993L4 13H3a1 1 0 0 1-.117-1.993L3 11zm17 0a1 1 0 1 1 0 2h-1a1 1 0 1 1 0-2zM4.929 4.929a1 1 0 0 1 1.32-.083l.094.083l.707.707a1 1 0 0 1-1.32 1.497l-.094-.083l-.707-.707a1 1 0 0 1 0-1.414m14.142 0a1 1 0 0 1 0 1.414l-.707.707a1 1 0 1 1-1.414-1.414l.707-.707a1 1 0 0 1 1.414 0M12 2a1 1 0 0 1 1 1v1a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1',
+        },
+      },
+      0,
+    )
+}
+
+const onChangeDL = async () => {
+  document.startViewTransition(async () => {
+    toggleDark()
+    changeDL()
+  })
+}
 
 const router = useRouter()
 const route = useRoute()
 
 const tabsContainer = ref()
 
-const getRouteComp = (tab) => {
+const isCollapse = ref(localStorage.getItem('tabIsCollapse') === 'true')
+
+const loadRouteMap = new Map()
+const getRouteComp = (tab, loadAsyncComponent = false) => {
+  if (loadRouteMap.has(tab.path)) return loadRouteMap.get(tab.path)
+  if (route.path !== tab.path && !loadAsyncComponent)
+    return {
+      render: () =>
+        h(
+          'div',
+          { class: 'd-flex f-1 a-center j-center', style: { fontSize: '50px' } },
+          'Loading...',
+        ),
+    }
   const matched = router.resolve(tab.path)?.matched
   if (matched) {
-    return matched[matched.length - 1].components.default
+    const component = matched[matched.length - 1]?.components?.default ?? {
+      render: () =>
+        h('div', { class: 'd-flex f-1 a-center j-center', style: { fontSize: '50px' } }, '404'),
+    }
+    const syncComponent =
+      component instanceof Function ? defineAsyncComponent(component) : component
+    loadRouteMap.set(tab.path, syncComponent)
+    return syncComponent
   }
 }
 
 router.beforeEach((to, from, next) => {
-  next()
-  setTab(to.path)
+  if (to.matched.length) {
+    next()
+    setTab(to.path)
+  } else {
+    next('/404')
+    setTab('/404')
+  }
 })
 
 const setTab = (path) => {
@@ -106,6 +259,8 @@ const setTab = (path) => {
       name: path,
     },
   })
+
+  reCalcTabWidth()
   refreshDragTabs()
   localStorage.setItem('seqTabs', JSON.stringify(tabs.value.map((o) => o.path)))
 }
@@ -117,9 +272,40 @@ const closeTab = (tab) => {
       if (route.path === tab.path) {
         router.push(tabs.value[Math.max(i - 1, 0)].path)
       }
+      reCalcTabWidth()
+      refreshDragTabs()
       return
     }
   }
+}
+
+const SIDEBAR_WIDTH = 280
+
+const toggleSideBar = (e) => {
+  isCollapse.value = !isCollapse.value
+  nextTick(() => {
+    gsap
+      .timeline()
+      .to(
+        e.currentTarget.querySelector('path'),
+        {
+          morphSVG: {
+            type: 'linear',
+            shape: isCollapse.value
+              ? 'M18 3a3 3 0 0 1 2.995 2.824L21 6v12a3 3 0 0 1-2.824 2.995L18 21H6a3 3 0 0 1-2.995-2.824L3 18V6a3 3 0 0 1 2.824-2.995L6 3zm0 2H9v14h9a1 1 0 0 0 .993-.883L19 18V6a1 1 0 0 0-.883-.993zm-4.387 4.21l.094.083l2 2a1 1 0 0 1 .083 1.32l-.083.094l-2 2a1 1 0 0 1-1.497-1.32l.083-.094L13.585 12l-1.292-1.293a1 1 0 0 1-.083-1.32l.083-.094a1 1 0 0 1 1.32-.083'
+              : 'M18 3a3 3 0 0 1 2.995 2.824L21 6v12a3 3 0 0 1-2.824 2.995L18 21H6a3 3 0 0 1-2.995-2.824L3 18V6a3 3 0 0 1 2.824-2.995L6 3zm0 2H9v14h9a1 1 0 0 0 .993-.883L19 18V6a1 1 0 0 0-.883-.993zm-2.293 4.293a1 1 0 0 1 .083 1.32l-.083.094L14.415 12l1.292 1.293a1 1 0 0 1 .083 1.32l-.083.094a1 1 0 0 1-1.32.083l-.094-.083l-2-2a1 1 0 0 1-.083-1.32l.083-.094l2-2a1 1 0 0 1 1.414 0',
+          },
+        },
+        0,
+      )
+      .to(
+        '.standard-aside',
+        {
+          width: isCollapse.value ? 64 : SIDEBAR_WIDTH,
+        },
+        0,
+      )
+  })
 }
 
 const initTabs = () => {
@@ -193,14 +379,22 @@ const menus = reactive([
 
 const tabs = ref([])
 
-const tabWidth = ref(250)
+const TAB_WIDTH = 220
+const tabWidth = ref(TAB_WIDTH)
 const tabGap = ref(8)
+
+const reCalcTabWidth = () => {
+  tabWidth.value = Math.min(
+    (tabsContainer.value.clientWidth - 100) / tabs.value.length - tabGap.value,
+    TAB_WIDTH,
+  )
+}
 
 const refreshDragTabs = () => {
   nextTick(() => {
     useDraggable(tabsContainer.value, {
       type: 'x',
-      bounds: tabsContainer.value,
+      // bounds: tabsContainer.value,
       width: tabWidth.value,
       gapX: tabGap.value,
       onChange: (newSeq) => {
@@ -210,52 +404,81 @@ const refreshDragTabs = () => {
   })
 }
 
+let observe = new ResizeObserver(
+  _.throttle(() => {
+    reCalcTabWidth()
+    refreshDragTabs()
+  }, 200),
+)
 onMounted(() => {
   initTabs()
   refreshDragTabs()
+  changeDL()
+  observe.observe(tabsContainer.value)
+})
+
+onUnmounted(() => {
+  observe.disconnect()
 })
 </script>
 
 <style scoped>
 .theme-standard {
-  --color-primary: #083a73;
+  --side-bar-bg: v-bind(isDark? '#313337': '#297045');
+  --header-bg: #083a73;
+  --el-menu-bg-color: var(--color-primary);
+  --el-menu-active-color: #fff;
+  --el-menu-text-color: #fff;
+  --el-menu-hover-text-color: #fff;
+  --el-menu-hover-bg-color: v-bind(isDark? '#4b565d': '#008469');
+
+  --tab-bg: v-bind(isDark? '#202020': '#edf2fa');
+  --tab-fg: v-bind(isDark? '#292929': '#fff');
+  --tab-hover: v-bind(isDark? '#979797': '#d3e3fd');
+
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
+
+.standard-aside {
+  background: var(--side-bar-bg);
+  height: 100%;
+  overflow: hidden;
+  width: v-bind(SIDEBAR_WIDTH + 'px');
+  .el-menu-item.is-active {
+    background-color: var(--el-menu-hover-bg-color);
+  }
+}
+
 .standard-header {
-  --el-header-height: 80px;
-  background: var(--color-primary);
+  height: 80px;
+  background: var(--side-bar-bg);
   color: #fff;
 }
 
 .standard-container {
+  flex: 1;
   overflow: hidden;
-  .standard-aside {
-    --el-menu-bg-color: var(--color-primary);
-    --el-menu-active-color: #fff;
-    --el-menu-text-color: #fff;
-    --el-menu-hover-text-color: #fff;
-    --el-menu-hover-bg-color: #1684fc;
-    background: var(--color-primary);
 
-    .el-menu-item.is-active {
-      background-color: #1684fc;
-    }
-  }
   .standard-router-view {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     padding: 0 !important;
-    background: #edf2fa;
     .standard-router-view-header {
-      padding: 0.6rem 0.8rem;
       position: relative;
-      height: 42px;
+      height: 2.93em;
+      overflow: hidden;
+      padding: 0.6em 0.8em;
+
+      background: var(--tab-bg);
     }
     .standard-router-view-body {
       flex: 1;
       overflow: hidden;
-      background: #fff;
+      background: var(--tab-fg);
       position: relative;
       .standard-router-view-body-wrapper {
         position: absolute;
@@ -263,7 +486,7 @@ onMounted(() => {
         left: 0;
         right: 0;
         bottom: 0;
-        padding: 1rem;
+        padding: 1em;
       }
     }
   }
@@ -283,7 +506,7 @@ onMounted(() => {
     bottom: 20%;
     width: 2px;
     right: v-bind(-tabGap / 2 - 1 + 'px');
-    background-color: #dde3e9;
+    background-color: var(--tab-bg);
   }
 
   &:hover {
@@ -296,22 +519,36 @@ onMounted(() => {
       bottom: 20%;
       width: 2px;
       left: v-bind(-tabGap / 2 - 1 + 'px');
-      background-color: #edf2fa;
+      background-color: var(--tab-bg);
       z-index: 13001;
     }
 
     .effect-tab-content:hover {
-      background-color: #d3e3fd;
+      background-color: var(--tab-hover);
     }
   }
 
+  .effect-tab-content-before {
+    position: absolute;
+    bottom: -0.5em;
+    color: transparent;
+    width: 0;
+  }
+
+  .effect-tab-content-after {
+    position: absolute;
+    bottom: -0.5em;
+    color: transparent;
+    width: 0;
+  }
+
   &.active-tab {
-    background-color: #fff;
-    border-radius: 0.6rem 0.6rem 0 0;
+    background-color: var(--tab-fg);
+    border-radius: 9px 9px 0 0;
     --dec-size: 15px;
-    box-shadow: 0 0.5rem 0 0 #fff;
+    box-shadow: 0 9px 0 0 var(--tab-fg);
     .effect-tab-content:hover {
-      background-color: #fff;
+      background-color: var(--tab-fg);
     }
     &::after {
       content: '';
@@ -320,34 +557,28 @@ onMounted(() => {
       bottom: 20%;
       width: 2px;
       left: v-bind(-tabGap / 2 - 1 + 'px');
-      background-color: #edf2fa;
+      background-color: var(--tab-bg);
       z-index: 3001;
     }
-    .effect-tab-content::before {
-      content: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M 24 0 L 24 24 L 0 24 Q 24 24 24 0 Z' fill='white'/></svg>");
-      position: absolute;
-      bottom: -0.6rem;
-      color: #fff;
+    .effect-tab-content-before {
       left: calc(-1 * var(--dec-size));
       width: var(--dec-size);
       height: var(--dec-size);
       background-color: transparent;
+      color: var(--tab-fg);
     }
-    .effect-tab-content::after {
-      content: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M 0 0 L 0 24 L 24 24 Q 0 24 0 0 Z' fill='white'/></svg>");
-      position: absolute;
-      bottom: -0.6rem;
-      color: #fff;
+    .effect-tab-content-after {
       right: calc(-1 * var(--dec-size));
       width: var(--dec-size);
       height: var(--dec-size);
       background-color: transparent;
+      color: var(--tab-fg);
     }
   }
 
   .effect-tab-item {
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.6rem;
+    padding: 0.3em 0.6em;
+    border-radius: 0.6em;
     flex: 1;
     display: flex;
     align-items: center;
@@ -359,21 +590,51 @@ onMounted(() => {
   }
 
   .effect-tab-content {
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.6rem;
+    padding: 0.3em 0.6em 0.3em 0.8em;
+    border-radius: 0.6em;
     flex: 1;
     display: flex;
-    align-items: center;
-    position: relative;
 
-    .effect-tab-close {
-      cursor: pointer;
-      padding: 0.15rem;
-      &:hover {
-        background-color: #edf2fa;
-        border-radius: 50%;
+    .effect-tab-content-wrapper {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      .effect-tab-title {
+        flex: 1;
+        width: 0;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .effect-tab-close {
+        cursor: pointer;
+        padding: 0.15em;
+        flex-shrink: 0;
+        &:hover {
+          background-color: #edf2fa;
+          border-radius: 50%;
+        }
       }
     }
+  }
+}
+
+.LD-switch {
+  font-size: 2rem;
+  border-radius: 1em;
+  width: 2.4em;
+  padding: 0.1em 0.2em;
+  display: flex;
+  align-items: center;
+  display: flex;
+  align-items: center;
+
+  & svg {
+    cursor: pointer;
+    border-radius: 50%;
   }
 }
 </style>

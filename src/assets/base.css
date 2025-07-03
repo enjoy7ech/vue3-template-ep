@@ -5,6 +5,23 @@
   margin: 0;
 }
 
+::view-transition-new(root) {
+  animation: 2s cubic-bezier(0.25, 1, 0.3, 1) circle-in-top-right forwards;
+}
+
+::view-transition-old(root) {
+  animation: none;
+}
+
+@keyframes circle-in-top-right {
+  from {
+    clip-path: circle(0% at right top);
+  }
+  to {
+    clip-path: circle(150% at right top);
+  }
+}
+
 body {
   min-height: 100vh;
   font-family:
@@ -21,6 +38,7 @@ body {
     'Helvetica Neue',
     sans-serif;
   font-size: 15px;
+  color: var(--el-text-color-primary);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -39,7 +57,12 @@ body {
     align-items: center;
   }
 }
-
+.f-col {
+  flex-direction: column;
+}
+.f-row {
+  flex-direction: row;
+}
 /* padding auto */
 .p-a {
   padding: auto;

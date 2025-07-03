@@ -116,7 +116,7 @@ export default function useDraggable(target, option) {
       onRelease: onRelease,
       cursor: option.cursor || 'default',
       type: option.type || 'x,y',
-      bounds: option.bounds || target,
+      autoScroll: true,
     })[0]
   }
 
