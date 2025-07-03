@@ -91,7 +91,7 @@
               :width="tabWidth"
               :disabled="route.path == tab.path"
               :persistent="false"
-              :show-after="1000"
+              :show-after="500"
             >
               <div
                 :style="{
@@ -242,23 +242,39 @@ const getRouteComp = (tab, loadAsyncComponent = false) => {
 }
 
 router.beforeEach((to, from, next) => {
+  /**
+   * 处理特殊参数
+   * replaceTab=true，替换当前tab
+   * returnUrl=xxx, 进行setTab
+   *
+   */
   if (to.matched.length) {
-    next()
     setTab(to.path)
+    next()
   } else {
-    next('/404')
     setTab('/404')
+    next('/404')
   }
 })
 
-const setTab = (path) => {
+const setTab = (path, replace = false) => {
   if (tabs.value.find((tab) => tab.path === path)) return
-  tabs.value.push({
-    path: path,
-    meta: getMeta(path) || {
-      name: path,
-    },
-  })
+  if (replace) {
+    const index = tabs.value.findIndex((tab) => tab.path === route.path)
+    tabs.value.splice(index, 1, {
+      path: path,
+      meta: getMeta(path) || {
+        name: path,
+      },
+    })
+  } else {
+    tabs.value.push({
+      path: path,
+      meta: getMeta(path) || {
+        name: path,
+      },
+    })
+  }
 
   reCalcTabWidth()
   refreshDragTabs()
