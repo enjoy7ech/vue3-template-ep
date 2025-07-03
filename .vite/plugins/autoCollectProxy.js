@@ -8,7 +8,7 @@ import _ from 'lodash'
  * target http://192.168.15.103:201
  * changeOrigin true
  * ws true
- * rewrite () => (path) => path.replace(/^\/api/, '')
+ * rewrite (path) => path.replace(/^\/api/, '')
  * @endProxy
  */
 export default function generateMeta() {
@@ -49,7 +49,7 @@ export default function generateMeta() {
 
               funcType.forEach((key) => {
                 const value = proxyCfg.match(new RegExp(`${key} (.+?)\n`))?.[1]
-                if (value) proxy[key] = new Function(value)
+                if (value) proxy[key] = new Function(`return ${value}`)()
               })
               if (!_.has(config, `server.proxy.${prefix}`)) {
                 console.log(`[vite-plugin-auto-collect-proxy] add proxy for ${prefix}`, proxy)
